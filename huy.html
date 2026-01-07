@@ -8,21 +8,129 @@
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial}
-body{background:url("img/nen.jpg") center/cover no-repeat fixed;color:#fff;overflow:auto;}
-body::before{content:"";position:fixed;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.45),rgba(0,0,0,.82));z-index:0;}
-.page{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;gap:14px;padding:18px 14px 64px;}
-.top{display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:6px;}
-.avatar{width:120px;height:120px;border-radius:50%;overflow:hidden;border:3px solid rgba(160,220,255,.75);box-shadow:0 0 22px rgba(120,200,255,.35),0 12px 30px rgba(0,0,0,.65);animation:breathe 4.2s ease-in-out infinite;transform-origin:center;}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.name{font-family:'Dancing Script', cursive;font-size:42px;font-weight:700;letter-spacing:.4px;color:#eafcff;text-shadow:0 0 8px rgba(160,230,255,.9),0 0 18px rgba(120,220,255,.6),0 12px 30px rgba(0,0,0,.75);}
-.emptyBox{width:min(920px, 100%);margin:0 auto;border-radius:18px;border:1px solid rgba(160,220,255,.18);background:rgba(0,0,0,.22);backdrop-filter: blur(8px);box-shadow:0 18px 60px rgba(0,0,0,.55);padding:18px 14px;text-align:center;}
-.emptyText{opacity:.9;font-weight:900;letter-spacing:.3px;color:#eafcff;text-shadow:0 0 10px rgba(120,235,255,.15);}
-.emptySub{margin-top:6px;font-size:12px;opacity:.75;}
-.back{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-size:14px;opacity:.88;cursor:pointer;z-index:10;user-select:none;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;user-select:none;-webkit-user-select:none;-ms-user-select:none}
+:focus{outline:none}
+
+body{
+  background:url("img/nen.jpg") center/cover no-repeat fixed;
+  color:#fff;
+  overflow:auto;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:linear-gradient(to bottom,rgba(0,0,0,.45),rgba(0,0,0,.82));
+  z-index:0;
+}
+
+.page{
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  padding:18px 14px 64px;
+}
+
+.top{display:flex;flex-direction:column;align-items:center;gap:10px}
+.avatar{
+  width:120px;height:120px;border-radius:50%;overflow:hidden;
+  border:3px solid rgba(160,220,255,.75);
+  box-shadow:0 0 22px rgba(120,200,255,.35),0 12px 30px rgba(0,0,0,.65);
+  animation:breathe 4.2s ease-in-out infinite;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.name{
+  font-family:'Dancing Script',cursive;
+  font-size:42px;font-weight:700;color:#eafcff;
+  text-shadow:0 0 12px rgba(160,230,255,.8);
+}
+
+.tabs{display:flex;justify-content:center;gap:18px;margin-top:6px}
+.tab{cursor:pointer;padding:6px 14px;border-radius:20px;font-weight:700;opacity:.65;transition:.25s}
+.tab.active{opacity:1;background:rgba(160,220,255,.18);box-shadow:0 0 12px rgba(160,220,255,.35)}
+
+.album{
+  width:min(960px,100%);
+  margin:0 auto;
+  display:none;
+  grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+  gap:12px;
+}
+.album.active{display:grid}
+.album img,.album video{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:14px;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,0,0,.55);
+  transition:.25s;
+}
+.album img:hover,.album video:hover{transform:scale(1.05)}
+
+.viewer{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.92);
+  display:none;
+  z-index:999;
+}
+.viewer.active{display:block}
+
+.viewerClose{
+  position:absolute;top:14px;right:16px;
+  width:42px;height:42px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(6px);
+  opacity:.95;
+  z-index:1001;
+}
+.viewerClose:active{transform:scale(.98)}
+
+.viewerStage{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  touch-action:none;   
+}
+
+.viewerImg{
+  max-width:94vw;
+  max-height:94vh;
+  object-fit:contain;
+  transform:translate(0px,0px) scale(1);
+  transform-origin:center center;
+  will-change:transform;
+  pointer-events:none; 
+}
+
+
+.viewerStage video{
+  max-width:94vw;
+  max-height:94vh;
+  object-fit:contain;
+}
+
+.back{
+  position:fixed;
+  bottom:18px;left:50%;
+  transform:translateX(-50%);
+  font-size:14px;opacity:.88;
+  cursor:pointer;
+  z-index:10;
+}
+
 @keyframes breathe{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
-@media (max-width:420px){.avatar{width:105px;height:105px}.name{font-size:38px}}
+@media(max-width:420px){.avatar{width:105px;height:105px}.name{font-size:38px}}
 </style>
 </head>
 
@@ -33,12 +141,253 @@ body::before{content:"";position:fixed;inset:0;background:linear-gradient(to bot
     <div class="name">Quang Huy</div>
   </div>
 
-  <div class="emptyBox" aria-label="Mục ảnh trống">
-    <div class="emptyText">Chưa có ảnh</div>
-    <div class="emptySub">Hiện tại chưa có ảnh/video nào được thêm.</div>
+  <div class="tabs">
+    <div class="tab active" data-tab="photo">Ảnh</div>
+    <div class="tab" data-tab="video">Video</div>
+  </div>
+
+  <div class="album active" id="photo">
+    <img src="huy/IMG_20260107_203653.jpg" alt="">
+  </div>
+
+  <div class="album" id="video">
+    <video src="video/v1.mp4"></video>
+    <video src="video/v2.mp4"></video>
   </div>
 </div>
 
+<div class="viewer" id="viewer" aria-hidden="true">
+  <div class="viewerClose" id="viewerClose" title="Đóng">✕</div>
+  <div class="viewerStage" id="viewerStage"></div>
+</div>
+
 <div class="back" onclick="history.back()">← Quay lại</div>
+
+<script>
+/* ===== Tabs ===== */
+const tabs = document.querySelectorAll('.tab');
+const albums = document.querySelectorAll('.album');
+tabs.forEach(t=>{
+  t.addEventListener('click', ()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    albums.forEach(a=>a.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+  });
+});
+
+/* ===== Viewer ===== */
+const viewer = document.getElementById('viewer');
+const stage  = document.getElementById('viewerStage');
+const btnClose = document.getElementById('viewerClose');
+
+function openViewerWith(node){
+  viewer.classList.add('active');
+  viewer.setAttribute('aria-hidden','false');
+  stage.innerHTML='';
+  stage.appendChild(node);
+}
+function closeViewer(){
+  viewer.classList.remove('active');
+  viewer.setAttribute('aria-hidden','true');
+  stage.innerHTML='';
+  resetGesture();
+}
+
+btnClose.addEventListener('click', closeViewer);
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && viewer.classList.contains('active')) closeViewer();
+});
+
+
+let imgEl = null;
+let pointers = new Map();
+let startDist = 0, startScale = 1, scale = 1;
+let startMid = {x:0,y:0};
+let startTranslate = {x:0,y:0};
+let translate = {x:0,y:0};
+
+let lastPan = {x:0,y:0};
+let isPanning = false;
+
+let tapMoved = false;
+let tapStart = {x:0,y:0};
+
+const MIN_SCALE = 1;
+const MAX_SCALE = 4;
+
+function clamp(v,min,max){ return Math.min(max, Math.max(min,v)); }
+function distance(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+function midpoint(a,b){ return {x:(a.x+b.x)/2, y:(a.y+b.y)/2}; }
+
+function applyTransform(){
+  if(!imgEl) return;
+  imgEl.style.transform = `translate(${translate.x}px,${translate.y}px) scale(${scale})`;
+}
+
+function resetGesture(){
+  pointers.clear();
+  startDist = 0; startScale = 1; scale = 1;
+  startMid = {x:0,y:0};
+  startTranslate = {x:0,y:0};
+  translate = {x:0,y:0};
+  lastPan = {x:0,y:0};
+  isPanning = false;
+  tapMoved = false;
+  tapStart = {x:0,y:0};
+  imgEl = null;
+
+  stage.onpointerdown = null;
+  stage.onpointermove = null;
+  stage.onpointerup = null;
+  stage.onpointercancel = null;
+  stage.ontouchend = null;
+  stage.style.touchAction = 'auto';
+}
+
+function enableImageGestures(targetImg){
+  resetGesture();
+  imgEl = targetImg;
+  imgEl.classList.add('viewerImg');
+  stage.style.touchAction = 'none';
+  applyTransform();
+
+  stage.onpointerdown = (e)=>{
+    stage.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+
+    tapMoved = false;
+    tapStart = {x:e.clientX, y:e.clientY};
+
+    if(pointers.size === 1){
+      isPanning = true;
+      lastPan = {x:e.clientX, y:e.clientY};
+    }
+    if(pointers.size === 2){
+      const pts = Array.from(pointers.values());
+      startDist = distance(pts[0], pts[1]);
+      startScale = scale;
+
+      startMid = midpoint(pts[0], pts[1]);
+      startTranslate = {x:translate.x, y:translate.y};
+
+      isPanning = false;
+    }
+  };
+
+  stage.onpointermove = (e)=>{
+    if(!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+
+    const dxTap = e.clientX - tapStart.x;
+    const dyTap = e.clientY - tapStart.y;
+    if(Math.hypot(dxTap,dyTap) > 6) tapMoved = true;
+
+    if(pointers.size === 1 && isPanning){
+      const dx = e.clientX - lastPan.x;
+      const dy = e.clientY - lastPan.y;
+      lastPan = {x:e.clientX, y:e.clientY};
+
+      if(scale > 1.01){
+        translate.x += dx;
+        translate.y += dy;
+        applyTransform();
+      }
+    }
+
+    if(pointers.size === 2){
+      const pts = Array.from(pointers.values());
+      const dist = distance(pts[0], pts[1]);
+      const mid = midpoint(pts[0], pts[1]);
+
+      let nextScale = startScale * (dist / (startDist || dist));
+      nextScale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
+      if(Math.abs(nextScale - scale) > 0.02) tapMoved = true;
+
+      const mdx = mid.x - startMid.x;
+      const mdy = mid.y - startMid.y;
+
+      scale = nextScale;
+      translate.x = startTranslate.x + mdx;
+      translate.y = startTranslate.y + mdy;
+
+      applyTransform();
+    }
+  };
+
+  stage.onpointerup = (e)=>{
+    pointers.delete(e.pointerId);
+
+    if(pointers.size === 0){
+      isPanning = false;
+
+      
+      if(!tapMoved) {
+        closeViewer();
+        return;
+      }
+
+      
+      if(scale <= 1.02){
+        scale = 1;
+        translate = {x:0,y:0};
+        applyTransform();
+      }
+    }
+
+    if(pointers.size === 1){
+      const remaining = Array.from(pointers.values())[0];
+      lastPan = {x:remaining.x, y:remaining.y};
+      isPanning = true;
+    }
+  };
+  stage.onpointercancel = stage.onpointerup;
+
+  
+  let lastTapTime = 0;
+  stage.ontouchend = ()=>{
+    const now = Date.now();
+    if(now - lastTapTime < 280){
+      if(scale > 1.1){
+        scale = 1; translate = {x:0,y:0};
+      }else{
+        scale = 2; translate = {x:0,y:0};
+      }
+      applyTransform();
+      lastTapTime = 0;
+    }else{
+      lastTapTime = now;
+    }
+  };
+}
+
+/* ===== Open items ===== */
+document.querySelectorAll('.album img,.album video').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    if(el.tagName.toLowerCase() === 'img'){
+      const img = new Image();
+      img.src = el.src;
+      img.alt = el.alt || '';
+      img.className = 'viewerImg';
+      openViewerWith(img);
+      enableImageGestures(img);
+    }else{
+      resetGesture();
+      const v = el.cloneNode(true);
+      v.controls = true;
+      v.playsInline = true;
+      v.autoplay = true;
+      stage.style.touchAction = 'auto';
+      openViewerWith(v);
+
+     
+      stage.onclick = (e)=>{
+       
+        if(e.target === stage) closeViewer();
+      };
+    }
+  });
+});
+</script>
 </body>
 </html>
