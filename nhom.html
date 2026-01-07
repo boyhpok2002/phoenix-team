@@ -11,12 +11,17 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial}
 
+:root{
+  --centerSize:150px;
+  --orbitSize:76px;
+  --radius:132px;
+}
+
 body{
   background:url("img/nen.jpg") center/cover no-repeat fixed;
   color:#fff;
   overflow:hidden;
 }
-
 body::before{
   content:"";
   position:fixed;
@@ -25,45 +30,46 @@ body::before{
   z-index:0;
 }
 
+
 .focusDim{
   position:fixed;
   inset:0;
-  z-index:6;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .18s ease;
   background:rgba(0,0,0,.45);
-}
-body.isFocus .focusDim{ opacity:1; }
-
-.header{
-  position:fixed;
-  top:0; left:0; right:0;
-  text-align:center;
-  padding:22px 16px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .45s ease;
   z-index:5;
 }
+body.isFocus .focusDim{opacity:1}
 
+/* ===== HEADER ===== */
+.header{
+  position:fixed;
+  top:0;left:0;right:0;
+  text-align:center;
+  padding:22px 16px;
+  z-index:6;
+}
 .title{
   font-size:clamp(34px,8vw,52px);
   font-weight:800;
   color:#ffe6a8;
-  text-shadow: 0 10px 30px rgba(0,0,0,.55);
-  transition:opacity .18s ease, filter .18s ease;
+  text-shadow:0 10px 30px rgba(0,0,0,.55);
+  animation:titleIn 1.2s ease forwards;
   opacity:0;
-  filter: blur(12px);
-  animation: titleIn 1.35s cubic-bezier(.16,1,.3,1) forwards;
+  transition: opacity .35s ease, filter .35s ease;
 }
 @keyframes titleIn{
-  0%{opacity:0; filter:blur(14px);}
-  100%{opacity:1; filter:blur(0);}
+  from{opacity:0;filter:blur(12px)}
+  to{opacity:1;filter:blur(0)}
 }
 
 body.isFocus .title{
-  opacity:.55;
-  filter:saturate(.9);
+  opacity:.18 !important;
+  filter:saturate(.8) brightness(.9) !important;
 }
 
+/* ===== STAGE ===== */
 .stage{
   position:relative;
   z-index:10;
@@ -72,6 +78,7 @@ body.isFocus .title{
   place-items:center;
 }
 
+/* ===== ORBIT ===== */
 .orbit{
   position:absolute;
   inset:0;
@@ -79,58 +86,42 @@ body.isFocus .title{
   place-items:center;
   pointer-events:none;
 }
-
 .orbit .item{
   position:absolute;
-  width:80px;
-  height:80px;
+  width:var(--orbitSize);
+  height:var(--orbitSize);
   border-radius:50%;
-  overflow:visible;
   pointer-events:auto;
-  cursor:pointer;
-  -webkit-tap-highlight-color: transparent;
-  z-index:12;
+  cursor:default;
 }
-.orbit .item *{ user-select:none; }
 
+/* ===== PIC (mượt) ===== */
 .pic{
+  width:100%;
+  height:100%;
   border-radius:50%;
   overflow:hidden;
   border:2px solid rgba(255,255,255,.65);
   box-shadow:
     0 0 10px rgba(255,255,255,.35),
     0 0 18px rgba(120,200,255,.25);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease, filter .18s ease;
-  position:relative;
-  z-index:1;
-  animation: breathe 3.5s ease-in-out infinite;
-  transform-origin:center;
-  opacity:0;
-  filter: blur(12px);
-  will-change: opacity, filter;
+  transition:
+    opacity .45s cubic-bezier(.22,1,.36,1),
+    filter  .45s cubic-bezier(.22,1,.36,1),
+    transform .45s cubic-bezier(.22,1,.36,1),
+    box-shadow .45s cubic-bezier(.22,1,.36,1),
+    border-color .45s cubic-bezier(.22,1,.36,1);
+  animation:breathe 3.5s ease-in-out infinite;
+  cursor:pointer; 
 }
-
-.orbit .pic{ width:80px; height:80px; }
-
-.orbit .item:nth-child(1) .pic{ animation: fadeIn 1.10s .20s ease forwards, breathe 3.5s ease-in-out infinite; }
-.orbit .item:nth-child(2) .pic{ animation: fadeIn 1.10s .35s ease forwards, breathe 3.5s ease-in-out infinite; }
-.orbit .item:nth-child(3) .pic{ animation: fadeIn 1.10s .50s ease forwards, breathe 3.5s ease-in-out infinite; }
-.orbit .item:nth-child(4) .pic{ animation: fadeIn 1.10s .65s ease forwards, breathe 3.5s ease-in-out infinite; }
-.orbit .item:nth-child(5) .pic{ animation: fadeIn 1.10s .80s ease forwards, breathe 3.5s ease-in-out infinite; }
-.orbit .item:nth-child(6) .pic{ animation: fadeIn 1.10s .95s ease forwards, breathe 3.5s ease-in-out infinite; }
-
-@keyframes fadeIn{
-  0%{ opacity:0; filter:blur(14px); }
-  100%{ opacity:1; filter:blur(0); }
+@keyframes breathe{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+  100%{transform:scale(1)}
 }
+.pic img{width:100%;height:100%;object-fit:cover}
 
-.pic img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  animation:none;
-}
-
+/* ===== OVERLAY (KHÔNG BACKGROUND) ===== */
 .overlay{
   position:absolute;
   left:50%;
@@ -139,198 +130,173 @@ body.isFocus .title{
   flex-direction:column;
   align-items:center;
   gap:6px;
+
+  width:max-content;
+  min-width:140px;
+  max-width:min(86vw, 360px);
+
+  padding:0;
+  background:none;
+  border:none;
+  backdrop-filter:none;
+
   opacity:0;
-  pointer-events:none;
-  transition: opacity .15s ease, transform .15s ease;
-  z-index:3;
+  visibility:hidden;     
+  pointer-events:none;   
+  transition:
+    opacity .28s ease,
+    transform .28s cubic-bezier(.22,1,.36,1),
+    visibility 0s linear .28s; 
+  z-index:999;
 }
-.overlay.top{ top:-90px; }
-.overlay.bottom{ bottom:-90px; }
+.overlay.top{top:-92px}
+.overlay.bottom{bottom:-92px}
+
 
 .nameTag{
-  white-space:nowrap;
-  font-size:20px;
+  font-family:'Dancing Script', cursive;
   font-weight:700;
+  white-space:normal;
+  text-align:center;
+  line-height:1.12;
+  font-size:22px;
   letter-spacing:.2px;
   color:#eafcff;
   text-shadow:
-    0 0 6px rgba(160,230,255,.85),
-    0 0 14px rgba(120,220,255,.55),
-    0 6px 20px rgba(0,0,0,.7);
+    0 0 8px rgba(160,230,255,.95),
+    0 0 18px rgba(120,220,255,.70),
+    0 10px 22px rgba(0,0,0,.75);
+  animation: glowName 2.2s ease-in-out infinite;
 }
-.nameTag.f-female{ font-family:'Dancing Script', cursive; }
-.nameTag.f-male{ font-family:'Pacifico', cursive; font-weight:400; }
+@keyframes glowName{
+  0%,100%{
+    filter:brightness(1);
+    text-shadow:
+      0 0 7px rgba(160,230,255,.80),
+      0 0 16px rgba(120,220,255,.55),
+      0 10px 22px rgba(0,0,0,.75);
+  }
+  50%{
+    filter:brightness(1.1);
+    text-shadow:
+      0 0 10px rgba(180,245,255,1),
+      0 0 24px rgba(120,235,255,.85),
+      0 14px 26px rgba(0,0,0,.78);
+  }
+}
+
 
 .openLink{
-  pointer-events:auto;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
   font-size:13px;
   font-weight:900;
   letter-spacing:.4px;
   color:#6fe9ff;
   text-decoration:none;
-  padding:2px 4px;
-  background:none;
-  border:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
   text-shadow:
-    0 0 6px rgba(120,235,255,.9),
-    0 0 14px rgba(120,235,255,.6),
+    0 0 8px rgba(120,235,255,.95),
+    0 0 18px rgba(120,235,255,.70),
     0 10px 22px rgba(0,0,0,.75);
+  animation: glowOpen 1.9s ease-in-out infinite;
 }
-.openIcon{
-  font-size:14px;
-  color:#6fe9ff;
-  filter:
-    drop-shadow(0 0 4px rgba(120,235,255,.9))
-    drop-shadow(0 0 10px rgba(120,235,255,.6));
-}
-.openLink:hover{
-  color:#ffffff;
-  text-shadow:
-    0 0 8px rgba(180,245,255,1),
-    0 0 18px rgba(120,235,255,.9),
-    0 0 32px rgba(120,235,255,.6);
-}
-
-.overlay.top .openLink{ order:0; }
-.overlay.top .nameTag{ order:1; }
-.overlay.bottom .nameTag{ order:0; }
-.overlay.bottom .openLink{ order:1; }
-
-.orbit .item:hover,
-.orbit .item:focus{ z-index:20; }
-.orbit .item.active{ z-index:20; }
-
-.orbit .item:hover .overlay,
-.orbit .item.active .overlay{
-  opacity:1;
-  transform:translateX(-50%) translateY(-2px);
+@keyframes glowOpen{
+  0%,100%{
+    filter:brightness(1);
+    text-shadow:
+      0 0 7px rgba(120,235,255,.80),
+      0 0 16px rgba(120,235,255,.55),
+      0 10px 22px rgba(0,0,0,.75);
+  }
+  50%{
+    filter:brightness(1.15);
+    text-shadow:
+      0 0 10px rgba(180,245,255,1),
+      0 0 24px rgba(120,235,255,.90),
+      0 14px 26px rgba(0,0,0,.78);
+  }
 }
 
-.orbit .item:hover .pic,
-.orbit .item.active .pic{
-  transform: scale(1.12);
-  border-color: rgba(200,245,255,.95);
-  box-shadow:
-    0 0 0 3px rgba(140,235,255,.22),
-    0 0 20px rgba(140,235,255,.65),
-    0 0 44px rgba(255,255,255,.25),
-    0 18px 40px rgba(0,0,0,.55);
-}
+/* ===== vị trí 6 ảnh ===== */
+.orbit .item:nth-child(1){transform:rotate(0deg) translate(var(--radius)) rotate(0)}
+.orbit .item:nth-child(2){transform:rotate(60deg) translate(var(--radius)) rotate(-60deg)}
+.orbit .item:nth-child(3){transform:rotate(120deg) translate(var(--radius)) rotate(-120deg)}
+.orbit .item:nth-child(4){transform:rotate(180deg) translate(var(--radius)) rotate(-180deg)}
+.orbit .item:nth-child(5){transform:rotate(240deg) translate(var(--radius)) rotate(-240deg)}
+.orbit .item:nth-child(6){transform:rotate(300deg) translate(var(--radius)) rotate(-300deg)}
 
-.orbit .item:nth-child(1){ transform:rotate(0deg)   translate(160px) rotate(0deg); }
-.orbit .item:nth-child(2){ transform:rotate(60deg)  translate(160px) rotate(-60deg); }
-.orbit .item:nth-child(3){ transform:rotate(120deg) translate(160px) rotate(-120deg); }
-.orbit .item:nth-child(4){ transform:rotate(180deg) translate(160px) rotate(-180deg); }
-.orbit .item:nth-child(5){ transform:rotate(240deg) translate(160px) rotate(-240deg); }
-.orbit .item:nth-child(6){ transform:rotate(300deg) translate(160px) rotate(-300deg); }
-
-@keyframes breathe{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.06)}
-  100%{transform:scale(1)}
-}
-
-.centerItem{
-  position:relative;
-  pointer-events:auto;
-  cursor:pointer;
-  -webkit-tap-highlight-color: transparent;
-  z-index:13;
-}
-
+/* ===== CENTER ===== */
+.centerItem{position:relative}
 .centerItem .pic{
-  width:160px;
-  height:160px;
+  width:var(--centerSize);
+  height:var(--centerSize);
   border:3px solid rgba(160,220,255,.75);
-  box-shadow:
-    0 0 20px rgba(120,200,255,.45),
-    0 10px 30px rgba(0,0,0,.6);
-  animation: fadeIn 1.25s 1.3s ease forwards, breathe 4s ease-in-out infinite;
-  opacity:0;
-  filter: blur(12px);
 }
+.centerItem .overlay.top{top:-102px}
 
-.centerItem .overlay{ pointer-events:none; }
-.centerItem .overlay.top{ top:-98px; }
-
-.centerItem:hover,
-.centerItem:focus{ z-index:30; }
-.centerItem.active{ z-index:30; }
-
-.centerItem:hover .overlay,
+/* ===== ACTIVE ===== */
+.item.active .overlay,
 .centerItem.active .overlay{
   opacity:1;
+  visibility:visible;     
+  transition:
+    opacity .28s ease,
+    transform .28s cubic-bezier(.22,1,.36,1),
+    visibility 0s;         
   transform:translateX(-50%) translateY(-2px);
+  pointer-events:auto;     
 }
 
-.centerItem:hover .pic,
+.item.active .pic,
 .centerItem.active .pic{
-  transform: scale(1.12);
-  border-color: rgba(200,245,255,.95);
+  transform:scale(1.12);
+  border-color:rgba(200,245,255,.95);
   box-shadow:
     0 0 0 3px rgba(140,235,255,.22),
-    0 0 20px rgba(140,235,255,.65),
-    0 0 44px rgba(255,255,255,.25),
+    0 0 24px rgba(140,235,255,.65),
     0 18px 40px rgba(0,0,0,.55);
 }
 
-body.isFocus .orbit .item:not(.active):not(.hot) .pic{
-  opacity:.22;
-  filter:saturate(.55) brightness(.75);
-  border-color: rgba(255,255,255,.18);
-  box-shadow:
-    0 0 6px rgba(0,0,0,.35),
-    0 0 12px rgba(0,0,0,.35);
+/* ===== 6 ảnh còn lại tối (dịu) ===== */
+body.isFocus .item:not(.active) .pic,
+body.isFocus .centerItem:not(.active) .pic{
+  opacity:.32;
+  filter:saturate(.45) brightness(.72);
+  transform:none;
+  box-shadow:0 0 12px rgba(0,0,0,.35);
 }
-body.isFocus .centerItem:not(.active):not(.hot) .pic{
-  opacity:.22;
-  filter:saturate(.55) brightness(.75);
-}
-
-.hot{ z-index:30; }
-.hot .overlay{
-  opacity:1;
-  transform:translateX(-50%) translateY(-2px);
-}
-.hot .pic{
-  transform: scale(1.12);
-  border-color: rgba(200,245,255,.95);
-  box-shadow:
-    0 0 0 3px rgba(140,235,255,.22),
-    0 0 20px rgba(140,235,255,.65),
-    0 0 44px rgba(255,255,255,.25),
-    0 18px 40px rgba(0,0,0,.55);
+body.isFocus .item:not(.active) .overlay,
+body.isFocus .centerItem:not(.active) .overlay{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
 }
 
+/* ===== BACK ===== */
 .back{
   position:fixed;
   bottom:18px;
   left:50%;
   transform:translateX(-50%);
-  font-size:14px;
-  opacity:.85;
+  opacity:.8;
+  z-index:20;
   cursor:pointer;
-  z-index:12;
   user-select:none;
 }
+body.isFocus .back{opacity:.25}
 
-@media (max-width:420px){
-  .centerItem .pic{ width:140px; height:140px; }
-  .orbit .item{ width:72px; height:72px; }
-  .orbit .pic{ width:72px; height:72px; }
-
-  .orbit .item:nth-child(1){ transform:rotate(0deg)   translate(145px) rotate(0deg); }
-  .orbit .item:nth-child(2){ transform:rotate(60deg)  translate(145px) rotate(-60deg); }
-  .orbit .item:nth-child(3){ transform:rotate(120deg) translate(145px) rotate(-120deg); }
-  .orbit .item:nth-child(4){ transform:rotate(180deg) translate(145px) rotate(-180deg); }
-  .orbit .item:nth-child(5){ transform:rotate(240deg) translate(145px) rotate(-240deg); }
-  .orbit .item:nth-child(6){ transform:rotate(300deg) translate(145px) rotate(-300deg); }
-
-  .centerItem .overlay.top{ top:-92px; }
+/* ===== MOBILE 360x640 ===== */
+@media(max-width:420px){
+  :root{
+    --centerSize:132px;
+    --orbitSize:68px;
+    --radius:112px;
+  }
+  .nameTag{font-size:21px}
+  .overlay{min-width:130px;max-width:min(90vw, 340px)}
 }
+
 
 .soundBtn{
   position:fixed;
@@ -352,7 +318,6 @@ body.isFocus .centerItem:not(.active):not(.hot) .pic{
 }
 .soundBtn:hover{ opacity:1; }
 .soundBtn:active{ transform: scale(.92); }
-
 .soundBtn svg{
   width:22px;
   height:22px;
@@ -371,7 +336,6 @@ body.isFocus .centerItem:not(.active):not(.hot) .pic{
     drop-shadow(0 0 3px rgba(255,120,120,.7))
     drop-shadow(0 2px 6px rgba(0,0,0,.6));
 }
-
 .soundHint{
   position:fixed;
   top:64px;
@@ -408,13 +372,12 @@ body.isFocus .centerItem:not(.active):not(.hot) .pic{
 <audio id="bgm" src="img/nhac.mp3" loop preload="auto"></audio>
 
 <button id="soundBtn" class="soundBtn" type="button" aria-label="Bật/tắt nhạc">
-  <svg id="iconOn" viewBox="0 0 24 24" aria-hidden="true">
+  <svg id="iconOn" viewBox="0 0 24 24">
     <path d="M11 5 6.8 8.3H4a1 1 0 0 0-1 1v5.4a1 1 0 0 0 1 1h2.8L11 19V5Z"/>
     <path d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
     <path d="M17.8 6.2a8 8 0 0 1 0 11.6"/>
   </svg>
-
-  <svg id="iconOff" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+  <svg id="iconOff" viewBox="0 0 24 24" style="display:none">
     <path d="M11 5 6.8 8.3H4a1 1 0 0 0-1 1v5.4a1 1 0 0 0 1 1h2.8L11 19V5Z"/>
     <path d="M16 9l5 6"/>
     <path d="M21 9l-5 6"/>
@@ -428,48 +391,48 @@ body.isFocus .centerItem:not(.active):not(.hot) .pic{
   <div class="orbit">
     <div class="item" aria-label="Phương Anh">
       <div class="overlay top">
-        <a class="openLink" href="phanh.html"><span class="openIcon">🔓</span> Mở</a>
-        <div class="nameTag f-female">Phương Anh</div>
+        <a class="openLink" href="phanh.html">🔓 Mở</a>
+        <div class="nameTag">Phương Anh</div>
       </div>
       <div class="pic"><img src="img/phanh.jpg" alt="Phương Anh"></div>
     </div>
 
     <div class="item" aria-label="Ngọc Anh">
       <div class="overlay bottom">
-        <div class="nameTag f-female">Ngọc Anh</div>
-        <a class="openLink" href="nganh.html"><span class="openIcon">🔓</span> Mở</a>
+        <div class="nameTag">Ngọc Anh</div>
+        <a class="openLink" href="nganh.html">🔓 Mở</a>
       </div>
       <div class="pic"><img src="img/nganh.jpg" alt="Ngọc Anh"></div>
     </div>
 
     <div class="item" aria-label="Quang Huy">
       <div class="overlay bottom">
-        <div class="nameTag f-male">Quang Huy</div>
-        <a class="openLink" href="huy.html"><span class="openIcon">🔓</span> Mở</a>
+        <div class="nameTag">Quang Huy</div>
+        <a class="openLink" href="huy.html">🔓 Mở</a>
       </div>
       <div class="pic"><img src="img/huy.jpg" alt="Quang Huy"></div>
     </div>
 
     <div class="item" aria-label="Giang">
       <div class="overlay top">
-        <a class="openLink" href="giang.html"><span class="openIcon">🔓</span> Mở</a>
-        <div class="nameTag f-male">Kary Giang</div>
+        <a class="openLink" href="giang.html">🔓 Mở</a>
+        <div class="nameTag">Kary Giang</div>
       </div>
       <div class="pic"><img src="img/giang.jpg" alt="Giang"></div>
     </div>
 
     <div class="item" aria-label="Trung Hiếu">
       <div class="overlay top">
-        <a class="openLink" href="hieu.html"><span class="openIcon">🔓</span> Mở</a>
-        <div class="nameTag f-male">Trung Hiếu</div>
+        <a class="openLink" href="hieu.html">🔓 Mở</a>
+        <div class="nameTag">Trung Hiếu</div>
       </div>
       <div class="pic"><img src="img/hieu.jpg" alt="Trung Hiếu"></div>
     </div>
 
     <div class="item" aria-label="Tuấn Dũng">
       <div class="overlay top">
-        <a class="openLink" href="dung.html"><span class="openIcon">🔓</span> Mở</a>
-        <div class="nameTag f-male">Tuấn Dũng</div>
+        <a class="openLink" href="dung.html">🔓 Mở</a>
+        <div class="nameTag">Tuấn Dũng</div>
       </div>
       <div class="pic"><img src="img/dung.jpg" alt="Tuấn Dũng"></div>
     </div>
@@ -477,8 +440,8 @@ body.isFocus .centerItem:not(.active):not(.hot) .pic{
 
   <div class="centerItem" aria-label="Nhóm">
     <div class="overlay top">
-      <a class="openLink" href="anh-nhom.html"><span class="openIcon">🔓</span> Mở</a>
-      <div class="nameTag f-male">Nhóm</div>
+      <a class="openLink" href="anh-nhom.html">🔓 Mở</a>
+      <div class="nameTag">Nhóm</div>
     </div>
     <div class="pic"><img src="img/nhom.jpg" alt="Ảnh nhóm"></div>
   </div>
@@ -488,65 +451,86 @@ body.isFocus .centerItem:not(.active):not(.hot) .pic{
 <div class="back" onclick="history.back()">← Quay lại</div>
 
 <script>
-const bodyEl = document.body;
-const items = document.querySelectorAll('.orbit .item, .centerItem');
 
-function setFocus(on){
-  bodyEl.classList.toggle('isFocus', !!on);
-}
+const body = document.body;
+const items = document.querySelectorAll('.item,.centerItem');
+let locked = null;
 
-function clearHot(){
-  items.forEach(x => x.classList.remove('hot'));
+function setActive(el){
+  items.forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  body.classList.add('isFocus');
 }
-function hasActive(){
-  return !!document.querySelector('.orbit .item.active, .centerItem.active');
+function clearAll(){
+  items.forEach(i=>i.classList.remove('active'));
+  body.classList.remove('isFocus');
+  locked = null;
 }
 
 items.forEach(item=>{
-  item.addEventListener('mouseenter', ()=>{
-    clearHot();
-    item.classList.add('hot');
-    setFocus(true);
+  const pic = item.querySelector('.pic');
+  if(!pic) return;
+
+ 
+  pic.addEventListener('pointerenter', (e)=>{
+    if(e.pointerType !== "mouse") return;
+    if(locked) return;
+    setActive(item);
   });
 
-  item.addEventListener('mouseleave', ()=>{
-    item.classList.remove('hot');
-    setFocus(hasActive());
+  pic.addEventListener('pointerleave', (e)=>{
+    if(e.pointerType !== "mouse") return;
+    if(locked) setActive(locked);
+    else clearAll();
   });
-});
 
-items.forEach(item => {
-  item.addEventListener('click', (e) => {
-    if (e.target.closest('.openLink')) return;
-    e.preventDefault?.();
-    clearHot();
-    items.forEach(x => x.classList.remove('active'));
-    item.classList.add('active');
-    setFocus(true);
+  
+  pic.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    locked = item;
+    setActive(item);
   });
-});
 
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.orbit .item') && !e.target.closest('.centerItem')) {
-    items.forEach(x => x.classList.remove('active'));
-    clearHot();
-    setFocus(false);
+  
+  const open = item.querySelector('.openLink');
+  if(open){
+    open.addEventListener('click', (e)=>{
+      e.stopPropagation();
+    });
   }
 });
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape'){
-    items.forEach(x => x.classList.remove('active'));
-    clearHot();
-    setFocus(false);
-  }
+
+document.addEventListener('click', clearAll);
+document.addEventListener('keydown', e=>{
+  if(e.key === "Escape") clearAll();
 });
+
 
 const bgm = document.getElementById("bgm");
 const soundBtn = document.getElementById("soundBtn");
 const iconOn = document.getElementById("iconOn");
 const iconOff = document.getElementById("iconOff");
 const hint = document.getElementById("soundHint");
+
+const STORE_KEY = "phoenix_bgm_enabled";
+
+function getWanted(){
+  const v = localStorage.getItem(STORE_KEY);
+  if(v === null) return true;
+  return v === "1";
+}
+function setWanted(on){
+  localStorage.setItem(STORE_KEY, on ? "1" : "0");
+}
+
+let hintTimer = null;
+function showHint(msg){
+  if(msg) hint.textContent = msg;
+  hint.classList.add("show");
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(()=>hint.classList.remove("show"), 2200);
+}
 
 function setUI(isOn){
   if(isOn){
@@ -560,40 +544,63 @@ function setUI(isOn){
   }
 }
 
-async function tryAutoPlay(){
+async function playSafe(){
+  bgm.volume = 0.4;
   try{
-    bgm.volume = 0.4;
     await bgm.play();
     setUI(true);
+    return true;
   }catch{
     setUI(false);
-    hint.classList.add("show");
-    setTimeout(()=>hint.classList.remove("show"), 2200);
+    return false;
   }
 }
+function pauseSafe(){
+  bgm.pause();
+  setUI(false);
+}
 
-tryAutoPlay();
 
-soundBtn.addEventListener("click", async () => {
-  if(!bgm.paused){
-    bgm.pause();
+(async () => {
+  if(!getWanted()){
     setUI(false);
     return;
   }
-  try{
-    await bgm.play();
-    setUI(true);
-  }catch{
-    setUI(false);
-    hint.textContent = "Trình duyệt chặn phát nhạc, hãy thử chạm lại";
-    hint.classList.add("show");
-    setTimeout(()=>hint.classList.remove("show"), 2200);
+  const ok = await playSafe();
+  if(!ok) showHint("Chạm bất kỳ để bật nhạc");
+})();
+
+
+function onFirstUserGesture(){
+  document.removeEventListener("pointerdown", onFirstUserGesture);
+  document.removeEventListener("keydown", onFirstUserGesture);
+
+  if(!getWanted()) return;
+  playSafe().then(ok => {
+    if(!ok) showHint("Trình duyệt chặn phát nhạc, hãy bấm biểu tượng loa");
+  });
+}
+document.addEventListener("pointerdown", onFirstUserGesture, { passive:true });
+document.addEventListener("keydown", onFirstUserGesture);
+
+/* nút loa */
+soundBtn.addEventListener("click", async () => {
+  if(!bgm.paused){
+    setWanted(false);
+    pauseSafe();
+    return;
   }
+  setWanted(true);
+  const ok = await playSafe();
+  if(!ok) showHint("Trình duyệt chặn phát nhạc, hãy chạm lại");
 });
 
-document.addEventListener("visibilitychange", () => {
-  setUI(!bgm.paused);
-});
+/* đồng bộ UI */
+function syncUI(){ setUI(!bgm.paused); }
+document.addEventListener("visibilitychange", syncUI);
+bgm.addEventListener("play", syncUI);
+bgm.addEventListener("pause", syncUI);
+bgm.addEventListener("ended", syncUI);
 </script>
 
 </body>
